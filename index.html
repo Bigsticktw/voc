@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 單字全能本 (深色大字版)</title>
+    <style>
+        :root {
+            /* 深色模式配色變數 */
+            --primary: #5c9ce6;       /* 稍微亮一點的藍色，在深色底比較清楚 */
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            
+            --bg: #121212;            /* 背景全黑 */
+            --panel-bg: #1e1e1e;      /* 控制列背景 */
+            --card-bg: #2d2d2d;       /* 卡片背景 */
+            --card-back-bg: #353535;  /* 卡片背面背景 */
+            
+            --text: #e0e0e0;          /* 主要文字 (灰白) */
+            --text-muted: #aaaaaa;    /* 次要文字 (灰) */
+            --border: #444444;        /* 邊框顏色 */
+        }
+
+        body {
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+            transition: background-color 0.3s;
+        }
+
+        /* 模式背景微調 */
+        body[data-mode="quiz"] { background-color: #0d1117; }
+        body[data-mode="library"] { background-color: #121212; }
+
+        /* --- 控制區塊 --- */
+        .controls-header {
+            background: var(--panel-bg);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+            border: 1px solid var(--border);
+        }
+
+        .mode-switch {
+            display: flex;
+            background: #000;
+            padding: 4px;
+            border-radius: 8px;
+            margin-right: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .mode-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        button, select {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+
+        button.primary { background-color: var(--primary); color: #121212; border: none; font-weight: bold;}
+        button.primary:hover { filter: brightness(110%); }
+        
+        button.outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        button.outline:hover { background-color: rgba(92, 156, 230, 0.1); }
+
+        select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #folderInput { display: none; }
+
+        /* --- 卡片區域 (加大版) --- */
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 700px;  /* 加寬 */
+            height: 450px;     /* 加高 */
+            position: relative;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+        }
+
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background-color: var(--card-back-bg);
+            border: 2px solid #555; /* 深色邊框 */
+        }
+
+        /* 字體加大設定 */
+        .word-text { 
+            font-size: 64px; /* 加大 */
+            font-weight: bold; 
+            color: var(--primary); 
+            margin-bottom: 15px; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .ipa-text { 
+            font-size: 28px; /* 加大 */
+            color: var(--text-muted); 
+            margin-bottom: 30px; 
+            font-family: "Lucida Sans Unicode", sans-serif; 
+        }
+        
+        .meaning-text { 
+            font-size: 36px; /* 加大 */
+            line-height: 1.6; 
+            font-weight: 500;
+        }
+
+        .hint-text {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-top: 30px;
+            opacity: 0.6;
+        }
+
+        /* --- 底部操作區 --- */
+        .action-area {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            justify-content: center;
+            min-height: 70px;
+        }
+
+        .lib-controls {
+            display: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .nav-btn:hover { background-color: #333; }
+
+        .quiz-controls {
+            display: none;
+            gap: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .quiz-controls.active { opacity: 1; pointer-events: all; }
+
+        .btn-grade {
+            width: 120px; height: 60px;
+            font-size: 18px; font-weight: bold;
+            border-radius: 30px; border: none; color: #121212;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+        .btn-grade:active { transform: scale(0.95); }
+        
+        .btn-know { background-color: var(--success); }
+        .btn-vague { background-color: var(--warning); color: #2c2c2c; }
+        .btn-unknown { background-color: var(--danger); color: white;}
+
+        /* --- 列表模式 (深色化) --- */
+        .list-view {
+            display: none;
+            width: 100%; max-width: 900px;
+            background: var(--panel-bg);
+            border-radius: 12px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-height: 70vh; overflow-y: auto;
+            position: absolute; top: 180px; z-index: 100;
+            border: 1px solid var(--border);
+        }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 18px; }
+        th { background-color: #000; color: var(--text-muted); position: sticky; top: 0; }
+        
+        /* 捲軸美化 */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* --- 狀態顯示 --- */
+        .status-text { margin-top: 15px; color: var(--text-muted); font-size: 16px; }
+        .msg-box {
+            position: fixed; top: 20px; right: 20px;
+            background: #333; color: white; padding: 15px 25px;
+            border-radius: 8px; display: none; z-index: 999;
+            border: 1px solid #555;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        body[data-mode="library"] .lib-controls { display: flex; }
+        body[data-mode="quiz"] .quiz-controls { display: flex; }
+        body[data-mode="quiz"] .card-container { display: block !important; }
+
+    </style>
+</head>
+<body data-mode="library">
+
+    <div id="msgBox" class="msg-box"></div>
+
+    <div class="controls-header">
+        <div class="mode-switch">
+            <button class="mode-btn active" onclick="setMode('library')">📖 單字庫</button>
+            <button class="mode-btn" onclick="setMode('quiz')">📝 測驗</button>
+        </div>
+
+        <button class="primary" onclick="document.getElementById('folderInput').click()">📂 載入資料夾</button>
+        <input type="file" id="folderInput" webkitdirectory directory multiple onchange="handleFiles(this.files)">
+        
+        <select id="unitSelect" onchange="handleUnitChange(this.value)" disabled>
+            <option value="">請先載入檔案...</option>
+        </select>
+
+        <button class="outline" onclick="speakCurrentWord()">🔊 發音 (↑)</button>
+        
+        <button class="outline lib-only-btn" onclick="toggleListView()" style="margin-left:auto">清單/卡片</button>
+    </div>
+
+    <div class="card-container" id="flashcard" onclick="flipCard()">
+        <div class="card">
+            <div class="card-face card-front">
+                <div class="word-text" id="frontWord">Dark Mode</div>
+                <div class="ipa-text" id="frontIpa">請載入檔案</div>
+                <div class="hint-text">(點擊翻面 / 空白鍵)</div>
+            </div>
+            <div class="card-face card-back">
+                <div class="meaning-text" id="backMeaning">
+                    請點擊上方「載入資料夾」<br>選取存放 .md 的資料夾
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="list-view" id="listView">
+        <table id="vocabTable">
+            <thead>
+                <tr><th>單字</th><th>KK音標</th><th>中文意思</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button class="primary" onclick="toggleListView()" style="margin-top:10px; width:100%">關閉列表</button>
+    </div>
+
+    <div class="action-area">
+        <div class="lib-controls">
+            <button class="nav-btn" onclick="libPrev()">←</button>
+            <div class="status-text" id="libStatus">0 / 0</div>
+            <button class="nav-btn" onclick="libNext()">→</button>
+        </div>
+
+        <div class="quiz-controls" id="quizGradeBtns">
+            <button class="btn-grade btn-unknown" onclick="quizGrade('unknown')">不知道<br><span style="font-size:12px; opacity:0.8">下一循環</span></button>
+            <button class="btn-grade btn-vague" onclick="quizGrade('vague')">模糊<br><span style="font-size:12px; opacity:0.8">兩循環後</span></button>
+            <button class="btn-grade btn-know" onclick="quizGrade('familiar')">熟悉<br><span style="font-size:12px; opacity:0.8">不出現</span></button>
+        </div>
+    </div>
+
+    <div class="status-text" id="quizStatus" style="display:none">
+        待複習: <span id="qCount">0</span> | 下輪: <span id="qNext">0</span>
+    </div>
+
+    <script>
+        let allUnitsData = {};
+        let currentUnitData = [];
+        let currentMode = 'library';
+        let isFlipped = false;
+        
+        let libIndex = 0;
+        let quizSchedule = [[], [], []];
+        let quizCurrentItem = null;
+        let isQuizFinished = false;
+
+        window.onload = async function() {
+            let autoCount = 0;
+            for (let i = 1; i <= 50; i++) {
+                try {
+                    let response = await fetch(`./U${i}.md`);
+                    if (response.ok) {
+                        let text = await response.text();
+                        let vocab = parseMarkdownTable(text);
+                        if (vocab.length > 0) {
+                            allUnitsData[i] = vocab;
+                            autoCount++;
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (autoCount > 0) {
+                updateUnitSelect();
+                showMsg(`自動載入 ${autoCount} 個單元`);
+                let firstKey = Object.keys(allUnitsData).sort((a,b)=>a-b)[0];
+                document.getElementById('unitSelect').value = firstKey;
+                handleUnitChange(firstKey);
+            }
+        };
+
+        async function handleFiles(files) {
+            allUnitsData = {};
+            let fileCount = 0;
+            for (let file of files) {
+                let match = file.name.match(/^U(\d+)\.md$/i);
+                if (match) {
+                    let unitNum = parseInt(match[1]);
+                    let text = await file.text();
+                    let vocab = parseMarkdownTable(text);
+                    if (vocab.length > 0) {
+                        allUnitsData[unitNum] = vocab;
+                        fileCount++;
+                    }
+                }
+            }
+            if (fileCount === 0) {
+                alert("未找到符合 U*.md 的檔案");
+                return;
+            }
+            updateUnitSelect();
+            let firstKey = Object.keys(allUnitsData).sort((a,b)=>a-b)[0];
+            document.getElementById('unitSelect').value = firstKey;
+            handleUnitChange(firstKey);
+            showMsg(`已手動載入 ${fileCount} 個單元`);
+        }
+
+        function parseMarkdownTable(text) {
+            const lines = text.split('\n');
+            const vocab = [];
+            for (let line of lines) {
+                line = line.trim();
+                if (!line || line.includes('---') || line.includes('序號')) continue;
+                let parts = line.split('|');
+                if (parts.length >= 5) {
+                    let word = parts[2]?.trim();
+                    let ipa = parts[3]?.trim();
+                    let meaning = parts[4]?.trim();
+                    if (word && meaning) vocab.push({ word, ipa, meaning });
+                }
+            }
+            return vocab;
+        }
+
+        function updateUnitSelect() {
+            const select = document.getElementById('unitSelect');
+            select.innerHTML = '';
+            select.disabled = false;
+            Object.keys(allUnitsData).sort((a,b)=>a-b).forEach(key => {
+                let opt = document.createElement('option');
+                opt.value = key;
+                opt.text = `U${key} (${allUnitsData[key].length}字)`;
+                select.appendChild(opt);
+            });
+        }
+
+        function handleUnitChange(unitNum) {
+            if (!allUnitsData[unitNum]) return;
+            currentUnitData = allUnitsData[unitNum];
+            initLibraryMode();
+            initQuizMode();
+            refreshDisplay();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.body.setAttribute('data-mode', mode);
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const libOnlyBtn = document.querySelector('.lib-only-btn');
+            const quizStatus = document.getElementById('quizStatus');
+            const listView = document.getElementById('listView');
+
+            if (mode === 'library') {
+                libOnlyBtn.style.display = 'block';
+                quizStatus.style.display = 'none';
+            } else {
+                libOnlyBtn.style.display = 'none';
+                quizStatus.style.display = 'block';
+                listView.style.display = 'none';
+            }
+
+            document.querySelector('.card').classList.remove('flipped');
+            isFlipped = false;
+            document.getElementById('quizGradeBtns').classList.remove('active');
+            refreshDisplay();
+        }
+
+        function refreshDisplay() {
+            if (currentMode === 'library') renderLibraryCard();
+            else renderQuizCard();
+        }
+
+        function initLibraryMode() {
+            libIndex = 0;
+            updateListTable();
+        }
+
+        function renderLibraryCard() {
+            if (currentUnitData.length === 0) return;
+            let item = currentUnitData[libIndex];
+            updateCardUI(item.word, item.ipa, item.meaning);
+            document.getElementById('libStatus').textContent = `${libIndex + 1} / ${currentUnitData.length}`;
+        }
+
+        function libNext() {
+            if (currentUnitData.length === 0) return;
+            resetFlip();
+            setTimeout(() => {
+                libIndex = (libIndex + 1) % currentUnitData.length;
+                renderLibraryCard();
+            }, 200);
+        }
+
+        function libPrev() {
+            if (currentUnitData.length === 0) return;
+            resetFlip();
+            setTimeout(() => {
+                libIndex = (libIndex - 1 + currentUnitData.length) % currentUnitData.length;
+                renderLibraryCard();
+            }, 200);
+        }
+
+        function toggleListView() {
+            let view = document.getElementById('listView');
+            view.style.display = (view.style.display === 'none' || view.style.display === '') ? 'block' : 'none';
+        }
+
+        function updateListTable() {
+            const tbody = document.querySelector('#vocabTable tbody');
+            tbody.innerHTML = '';
+            currentUnitData.forEach(item => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td style="font-weight:bold; color:var(--primary)">${item.word}</td><td style="color:#aaa">${item.ipa}</td><td>${item.meaning}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function initQuizMode() {
+            let raw = JSON.parse(JSON.stringify(currentUnitData));
+            quizSchedule = [raw, [], []];
+            quizCurrentItem = null;
+            isQuizFinished = false;
+            pickNextQuizCard();
+        }
+
+        function pickNextQuizCard() {
+            if (quizSchedule[0].length === 0) {
+                if (quizSchedule[1].length === 0 && quizSchedule[2].length === 0) {
+                    isQuizFinished = true;
+                    return;
+                }
+                quizSchedule.shift();
+                quizSchedule.push([]);
+                showMsg("進入下一循環！");
+            }
+            if (quizSchedule[0].length === 0) {
+                 pickNextQuizCard();
+                 return;
+            }
+            quizCurrentItem = quizSchedule[0].shift();
+        }
+
+        function renderQuizCard() {
+            if (isQuizFinished) {
+                updateCardUI("恭喜完成", "🎉", "本單元所有單字已熟記！");
+                document.getElementById('quizGradeBtns').classList.remove('active');
+                return;
+            }
+            if (!quizCurrentItem) return;
+            updateCardUI(quizCurrentItem.word, quizCurrentItem.ipa, quizCurrentItem.meaning);
+            updateQuizStatus();
+        }
+
+        function quizGrade(level) {
+            if (!isFlipped || currentMode !== 'quiz' || isQuizFinished) return;
+            switch(level) {
+                case 'familiar': break; 
+                case 'unknown': quizSchedule[1].push(quizCurrentItem); break;
+                case 'vague': if(!quizSchedule[2]) quizSchedule[2] = []; quizSchedule[2].push(quizCurrentItem); break;
+            }
+            resetFlip();
+            document.getElementById('quizGradeBtns').classList.remove('active');
+            setTimeout(() => {
+                pickNextQuizCard();
+                renderQuizCard();
+            }, 200);
+        }
+
+        function updateQuizStatus() {
+            let current = quizSchedule[0].length + (quizCurrentItem ? 1 : 0);
+            let next = quizSchedule[1].length + quizSchedule[2].length;
+            document.getElementById('qCount').textContent = current;
+            document.getElementById('qNext').textContent = next;
+        }
+
+        function updateCardUI(word, ipa, meaning) {
+            document.getElementById('frontWord').textContent = word;
+            document.getElementById('frontIpa').textContent = ipa;
+            document.getElementById('backMeaning').innerHTML = meaning.replace(/\n/g, '<br>');
+        }
+
+        function flipCard() {
+            const card = document.querySelector('.card');
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                card.classList.add('flipped');
+                if (currentMode === 'quiz' && !isQuizFinished) {
+                    document.getElementById('quizGradeBtns').classList.add('active');
+                }
+            } else {
+                card.classList.remove('flipped');
+                document.getElementById('quizGradeBtns').classList.remove('active');
+            }
+        }
+
+        function resetFlip() {
+            isFlipped = false;
+            document.querySelector('.card').classList.remove('flipped');
+        }
+
+        function speakCurrentWord() {
+            // 新增：播放前先取消所有正在或排隊的語音
+            window.speechSynthesis.cancel();
+
+            let word = "";
+            if (currentMode === 'library') {
+                if(currentUnitData.length > 0) word = currentUnitData[libIndex].word;
+            } else {
+                if(quizCurrentItem) word = quizCurrentItem.word;
+            }
+            if (word) {
+                let cleanWord = word.replace(/\(.*\)/g, '').trim();
+                let u = new SpeechSynthesisUtterance(cleanWord);
+                u.lang = 'en-US';
+                u.rate = 0.8;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        function showMsg(txt) {
+            const box = document.getElementById('msgBox');
+            box.textContent = txt;
+            box.style.display = 'block';
+            setTimeout(() => box.style.display = 'none', 3000);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flipCard();
+            } else if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                speakCurrentWord();
+            }
+            
+            if (currentMode === 'library') {
+                if (e.code === 'ArrowLeft') libPrev();
+                if (e.code === 'ArrowRight') libNext();
+            } 
+            else if (currentMode === 'quiz' && isFlipped && !isQuizFinished) {
+                if (e.code === 'ArrowLeft') quizGrade('unknown');
+                if (e.code === 'ArrowDown') quizGrade('vague');
+                if (e.code === 'ArrowRight') quizGrade('familiar');
+            }
+        });
+
+    </script>
+</body>
+</html>
