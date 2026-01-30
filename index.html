@@ -385,6 +385,57 @@
         body[data-mode="quiz"] .card-container {
             display: block !important;
         }
+
+        /* --- 觸控區域優化 --- */
+        #touchLeft,
+        #touchRight {
+            position: fixed;
+            top: 100px;
+            /* 避開上方 Header */
+            bottom: 90px;
+            /* 避開下方發音按鈕 */
+            width: 20%;
+            z-index: 80;
+            /* background: rgba(255, 0, 0, 0.1);  除錯用，正式版透明 */
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #touchLeft {
+            left: 0;
+        }
+
+        #touchRight {
+            right: 0;
+        }
+
+        /* 大發音按鈕 */
+        #bigSpeakBtn {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: var(--card-bg);
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: bold;
+            border-top: 2px solid var(--border);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #bigSpeakBtn:active {
+            background: #333;
+        }
+
+        /* 為了不被下方按鈕擋住，body 底部留白 */
+        body {
+            padding-bottom: 100px;
+        }
     </style>
 </head>
 
@@ -459,6 +510,13 @@
     <div class="status-text" id="quizStatus" style="display:none">
         待複習: <span id="qCount">0</span> | 下輪: <span id="qNext">0</span>
     </div>
+
+    <!-- 觸控區塊 -->
+    <div id="touchLeft" onclick="handleTouchLeft()"></div>
+    <div id="touchRight" onclick="handleTouchRight()"></div>
+
+    <!-- 底部大發音按鈕 -->
+    <button id="bigSpeakBtn" onclick="speakCurrentWord()">🔊 發 音</button>
 
     <script>
         let allUnitsData = {};
@@ -768,6 +826,26 @@
             }
         });
 
+        // 觸控區邏輯
+        function handleTouchLeft() {
+            if (currentMode === 'library') {
+                libPrev();
+                showTouchFeedback('touchLeft');
+            }
+        }
+
+        function handleTouchRight() {
+            if (currentMode === 'library') {
+                libNext();
+                showTouchFeedback('touchRight');
+            }
+        }
+
+        function showTouchFeedback(id) {
+            const el = document.getElementById(id);
+            el.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            setTimeout(() => el.style.backgroundColor = 'transparent', 150);
+        }
     </script>
 </body>
 
