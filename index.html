@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,19 +8,27 @@
     <style>
         :root {
             /* 深色模式配色變數 */
-            --primary: #5c9ce6;       /* 稍微亮一點的藍色，在深色底比較清楚 */
+            --primary: #5c9ce6;
+            /* 稍微亮一點的藍色，在深色底比較清楚 */
             --success: #2ecc71;
             --warning: #f1c40f;
             --danger: #e74c3c;
-            
-            --bg: #121212;            /* 背景全黑 */
-            --panel-bg: #1e1e1e;      /* 控制列背景 */
-            --card-bg: #2d2d2d;       /* 卡片背景 */
-            --card-back-bg: #353535;  /* 卡片背面背景 */
-            
-            --text: #e0e0e0;          /* 主要文字 (灰白) */
-            --text-muted: #aaaaaa;    /* 次要文字 (灰) */
-            --border: #444444;        /* 邊框顏色 */
+
+            --bg: #121212;
+            /* 背景全黑 */
+            --panel-bg: #1e1e1e;
+            /* 控制列背景 */
+            --card-bg: #2d2d2d;
+            /* 卡片背景 */
+            --card-back-bg: #353535;
+            /* 卡片背面背景 */
+
+            --text: #e0e0e0;
+            /* 主要文字 (灰白) */
+            --text-muted: #aaaaaa;
+            /* 次要文字 (灰) */
+            --border: #444444;
+            /* 邊框顏色 */
         }
 
         body {
@@ -37,15 +46,20 @@
         }
 
         /* 模式背景微調 */
-        body[data-mode="quiz"] { background-color: #0d1117; }
-        body[data-mode="library"] { background-color: #121212; }
+        body[data-mode="quiz"] {
+            background-color: #0d1117;
+        }
+
+        body[data-mode="library"] {
+            background-color: #121212;
+        }
 
         /* --- 控制區塊 --- */
         .controls-header {
             background: var(--panel-bg);
             padding: 15px 25px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
             display: flex;
             gap: 12px;
@@ -79,10 +93,11 @@
         .mode-btn.active {
             background: var(--card-bg);
             color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        button, select {
+        button,
+        select {
             padding: 10px 16px;
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -93,22 +108,44 @@
             color: var(--text);
         }
 
-        button.primary { background-color: var(--primary); color: #121212; border: none; font-weight: bold;}
-        button.primary:hover { filter: brightness(110%); }
-        
-        button.outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        button.outline:hover { background-color: rgba(92, 156, 230, 0.1); }
+        button.primary {
+            background-color: var(--primary);
+            color: #121212;
+            border: none;
+            font-weight: bold;
+        }
 
-        select:disabled { opacity: 0.5; cursor: not-allowed; }
+        button.primary:hover {
+            filter: brightness(110%);
+        }
 
-        #folderInput { display: none; }
+        button.outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        button.outline:hover {
+            background-color: rgba(92, 156, 230, 0.1);
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #folderInput {
+            display: none;
+        }
 
         /* --- 卡片區域 (加大版) --- */
         .card-container {
             perspective: 1000px;
             width: 100%;
-            max-width: 700px;  /* 加寬 */
-            height: 450px;     /* 加高 */
+            max-width: 700px;
+            /* 加寬 */
+            height: 450px;
+            /* 加高 */
             position: relative;
             cursor: pointer;
             margin-bottom: 30px;
@@ -121,11 +158,13 @@
             transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border);
         }
 
-        .card.flipped { transform: rotateY(180deg); }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
 
         .card-face {
             position: absolute;
@@ -146,28 +185,32 @@
         .card-back {
             transform: rotateY(180deg);
             background-color: var(--card-back-bg);
-            border: 2px solid #555; /* 深色邊框 */
+            border: 2px solid #555;
+            /* 深色邊框 */
         }
 
         /* 字體加大設定 */
-        .word-text { 
-            font-size: 64px; /* 加大 */
-            font-weight: bold; 
-            color: var(--primary); 
-            margin-bottom: 15px; 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        .word-text {
+            font-size: 64px;
+            /* 加大 */
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
-        
-        .ipa-text { 
-            font-size: 28px; /* 加大 */
-            color: var(--text-muted); 
-            margin-bottom: 30px; 
-            font-family: "Lucida Sans Unicode", sans-serif; 
+
+        .ipa-text {
+            font-size: 28px;
+            /* 加大 */
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-family: "Lucida Sans Unicode", sans-serif;
         }
-        
-        .meaning-text { 
-            font-size: 36px; /* 加大 */
-            line-height: 1.6; 
+
+        .meaning-text {
+            font-size: 36px;
+            /* 加大 */
+            line-height: 1.6;
             font-weight: 500;
         }
 
@@ -192,18 +235,24 @@
             gap: 30px;
             align-items: center;
         }
-        
+
         .nav-btn {
-            width: 60px; height: 60px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             font-size: 24px;
             background: var(--card-bg);
             border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--text);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-        .nav-btn:hover { background-color: #333; }
+
+        .nav-btn:hover {
+            background-color: #333;
+        }
 
         .quiz-controls {
             display: none;
@@ -212,60 +261,133 @@
             pointer-events: none;
             transition: opacity 0.3s;
         }
-        
-        .quiz-controls.active { opacity: 1; pointer-events: all; }
+
+        .quiz-controls.active {
+            opacity: 1;
+            pointer-events: all;
+        }
 
         .btn-grade {
-            width: 120px; height: 60px;
-            font-size: 18px; font-weight: bold;
-            border-radius: 30px; border: none; color: #121212;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            width: 120px;
+            height: 60px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            border: none;
+            color: #121212;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transition: transform 0.1s;
         }
-        .btn-grade:active { transform: scale(0.95); }
-        
-        .btn-know { background-color: var(--success); }
-        .btn-vague { background-color: var(--warning); color: #2c2c2c; }
-        .btn-unknown { background-color: var(--danger); color: white;}
+
+        .btn-grade:active {
+            transform: scale(0.95);
+        }
+
+        .btn-know {
+            background-color: var(--success);
+        }
+
+        .btn-vague {
+            background-color: var(--warning);
+            color: #2c2c2c;
+        }
+
+        .btn-unknown {
+            background-color: var(--danger);
+            color: white;
+        }
 
         /* --- 列表模式 (深色化) --- */
         .list-view {
             display: none;
-            width: 100%; max-width: 900px;
+            width: 100%;
+            max-width: 900px;
             background: var(--panel-bg);
-            border-radius: 12px; padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            max-height: 70vh; overflow-y: auto;
-            position: absolute; top: 180px; z-index: 100;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            max-height: 70vh;
+            overflow-y: auto;
+            position: absolute;
+            top: 180px;
+            z-index: 100;
             border: 1px solid var(--border);
         }
-        
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 18px; }
-        th { background-color: #000; color: var(--text-muted); position: sticky; top: 0; }
-        
-        /* 捲軸美化 */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-        /* --- 狀態顯示 --- */
-        .status-text { margin-top: 15px; color: var(--text-muted); font-size: 16px; }
-        .msg-box {
-            position: fixed; top: 20px; right: 20px;
-            background: #333; color: white; padding: 15px 25px;
-            border-radius: 8px; display: none; z-index: 999;
-            border: 1px solid #555;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        body[data-mode="library"] .lib-controls { display: flex; }
-        body[data-mode="quiz"] .quiz-controls { display: flex; }
-        body[data-mode="quiz"] .card-container { display: block !important; }
+        th,
+        td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-size: 18px;
+        }
 
+        th {
+            background-color: #000;
+            color: var(--text-muted);
+            position: sticky;
+            top: 0;
+        }
+
+        /* 捲軸美化 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* --- 狀態顯示 --- */
+        .status-text {
+            margin-top: 15px;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .msg-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: none;
+            z-index: 999;
+            border: 1px solid #555;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        body[data-mode="library"] .lib-controls {
+            display: flex;
+        }
+
+        body[data-mode="quiz"] .quiz-controls {
+            display: flex;
+        }
+
+        body[data-mode="quiz"] .card-container {
+            display: block !important;
+        }
     </style>
 </head>
+
 <body data-mode="library">
 
     <div id="msgBox" class="msg-box"></div>
@@ -278,13 +400,13 @@
 
         <button class="primary" onclick="document.getElementById('folderInput').click()">📂 載入資料夾</button>
         <input type="file" id="folderInput" webkitdirectory directory multiple onchange="handleFiles(this.files)">
-        
+
         <select id="unitSelect" onchange="handleUnitChange(this.value)" disabled>
             <option value="">請先載入檔案...</option>
         </select>
 
         <button class="outline" onclick="speakCurrentWord()">🔊 發音 (↑)</button>
-        
+
         <button class="outline lib-only-btn" onclick="toggleListView()" style="margin-left:auto">清單/卡片</button>
     </div>
 
@@ -306,7 +428,11 @@
     <div class="list-view" id="listView">
         <table id="vocabTable">
             <thead>
-                <tr><th>單字</th><th>KK音標</th><th>中文意思</th></tr>
+                <tr>
+                    <th>單字</th>
+                    <th>KK音標</th>
+                    <th>中文意思</th>
+                </tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -321,9 +447,12 @@
         </div>
 
         <div class="quiz-controls" id="quizGradeBtns">
-            <button class="btn-grade btn-unknown" onclick="quizGrade('unknown')">不知道<br><span style="font-size:12px; opacity:0.8">下一循環</span></button>
-            <button class="btn-grade btn-vague" onclick="quizGrade('vague')">模糊<br><span style="font-size:12px; opacity:0.8">兩循環後</span></button>
-            <button class="btn-grade btn-know" onclick="quizGrade('familiar')">熟悉<br><span style="font-size:12px; opacity:0.8">不出現</span></button>
+            <button class="btn-grade btn-unknown" onclick="quizGrade('unknown')">不知道<br><span
+                    style="font-size:12px; opacity:0.8">下一循環</span></button>
+            <button class="btn-grade btn-vague" onclick="quizGrade('vague')">模糊<br><span
+                    style="font-size:12px; opacity:0.8">兩循環後</span></button>
+            <button class="btn-grade btn-know" onclick="quizGrade('familiar')">熟悉<br><span
+                    style="font-size:12px; opacity:0.8">不出現</span></button>
         </div>
     </div>
 
@@ -336,15 +465,17 @@
         let currentUnitData = [];
         let currentMode = 'library';
         let isFlipped = false;
-        
+
         let libIndex = 0;
         let quizSchedule = [[], [], []];
         let quizCurrentItem = null;
         let isQuizFinished = false;
 
-        window.onload = async function() {
+        window.onload = async function () {
+            showMsg("正在自動載入單元...");
             let autoCount = 0;
-            for (let i = 1; i <= 50; i++) {
+            // 嘗試載入 U1 到 U30
+            for (let i = 1; i <= 30; i++) {
                 try {
                     let response = await fetch(`./U${i}.md`);
                     if (response.ok) {
@@ -355,14 +486,18 @@
                             autoCount++;
                         }
                     }
-                } catch (e) {}
+                } catch (e) {
+                    // console.log("Auto-load skipped for U" + i);
+                }
             }
             if (autoCount > 0) {
                 updateUnitSelect();
-                showMsg(`自動載入 ${autoCount} 個單元`);
-                let firstKey = Object.keys(allUnitsData).sort((a,b)=>a-b)[0];
+                showMsg(`自動載入完成！共 ${autoCount} 個單元`);
+                let firstKey = Object.keys(allUnitsData).sort((a, b) => a - b)[0];
                 document.getElementById('unitSelect').value = firstKey;
                 handleUnitChange(firstKey);
+            } else {
+                showMsg("提示：由電腦開啟時無法自動讀取，請使用「載入資料夾」按鈕");
             }
         };
 
@@ -386,7 +521,7 @@
                 return;
             }
             updateUnitSelect();
-            let firstKey = Object.keys(allUnitsData).sort((a,b)=>a-b)[0];
+            let firstKey = Object.keys(allUnitsData).sort((a, b) => a - b)[0];
             document.getElementById('unitSelect').value = firstKey;
             handleUnitChange(firstKey);
             showMsg(`已手動載入 ${fileCount} 個單元`);
@@ -413,7 +548,7 @@
             const select = document.getElementById('unitSelect');
             select.innerHTML = '';
             select.disabled = false;
-            Object.keys(allUnitsData).sort((a,b)=>a-b).forEach(key => {
+            Object.keys(allUnitsData).sort((a, b) => a - b).forEach(key => {
                 let opt = document.createElement('option');
                 opt.value = key;
                 opt.text = `U${key} (${allUnitsData[key].length}字)`;
@@ -434,7 +569,7 @@
             document.body.setAttribute('data-mode', mode);
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
+
             const libOnlyBtn = document.querySelector('.lib-only-btn');
             const quizStatus = document.getElementById('quizStatus');
             const listView = document.getElementById('listView');
@@ -523,8 +658,8 @@
                 showMsg("進入下一循環！");
             }
             if (quizSchedule[0].length === 0) {
-                 pickNextQuizCard();
-                 return;
+                pickNextQuizCard();
+                return;
             }
             quizCurrentItem = quizSchedule[0].shift();
         }
@@ -542,10 +677,10 @@
 
         function quizGrade(level) {
             if (!isFlipped || currentMode !== 'quiz' || isQuizFinished) return;
-            switch(level) {
-                case 'familiar': break; 
+            switch (level) {
+                case 'familiar': break;
                 case 'unknown': quizSchedule[1].push(quizCurrentItem); break;
-                case 'vague': if(!quizSchedule[2]) quizSchedule[2] = []; quizSchedule[2].push(quizCurrentItem); break;
+                case 'vague': if (!quizSchedule[2]) quizSchedule[2] = []; quizSchedule[2].push(quizCurrentItem); break;
             }
             resetFlip();
             document.getElementById('quizGradeBtns').classList.remove('active');
@@ -593,9 +728,9 @@
 
             let word = "";
             if (currentMode === 'library') {
-                if(currentUnitData.length > 0) word = currentUnitData[libIndex].word;
+                if (currentUnitData.length > 0) word = currentUnitData[libIndex].word;
             } else {
-                if(quizCurrentItem) word = quizCurrentItem.word;
+                if (quizCurrentItem) word = quizCurrentItem.word;
             }
             if (word) {
                 let cleanWord = word.replace(/\(.*\)/g, '').trim();
@@ -621,11 +756,11 @@
                 e.preventDefault();
                 speakCurrentWord();
             }
-            
+
             if (currentMode === 'library') {
                 if (e.code === 'ArrowLeft') libPrev();
                 if (e.code === 'ArrowRight') libNext();
-            } 
+            }
             else if (currentMode === 'quiz' && isFlipped && !isQuizFinished) {
                 if (e.code === 'ArrowLeft') quizGrade('unknown');
                 if (e.code === 'ArrowDown') quizGrade('vague');
@@ -635,4 +770,5 @@
 
     </script>
 </body>
+
 </html>
